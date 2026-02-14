@@ -1,0 +1,15 @@
+{
+  "name": "রমজান ও নামাজ গাইড",
+  "short_name": "Namaz Guide",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0f2027",
+  "theme_color": "#2ecc71",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
