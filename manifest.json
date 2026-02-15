@@ -1,0 +1,16 @@
+{
+  "short_name": "রমজান ২০২৬",
+  "name": "রমজান ও নামাজ গাইড ২০২৬",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2319/2319833.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#27ae60",
+  "background_color": "#ffffff"
+}
