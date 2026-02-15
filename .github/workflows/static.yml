@@ -1,0 +1,228 @@
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload entire repository
+          path: '.'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>à¦°à¦®à¦œà¦¾à¦¨ à¦“ à¦¨à¦¾à¦®à¦¾à¦œ à¦—à¦¾à¦‡à¦¡ à§¨à§¦à§¨à§¬</title>
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+:root{
+    --primary:#0f2027;
+    --secondary:#203a43;
+    --accent:#2ecc71;
+    --gold:#f1c40f;
+    --bg:#f4f7f9;
+    --card-bg:#ffffff;
+    --text-dark:#2c3e50;
+}
+
+.dark{
+    --primary:#000000;
+    --secondary:#1a1a1a;
+    --card-bg:#1f1f1f;
+    --text-dark:#ffffff;
+}
+
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:#fff;
+    transition:.4s;
+    overflow-x:hidden;
+}
+
+.container{max-width:520px;margin:auto;padding:20px;}
+
+.card{
+    background:var(--card-bg);
+    color:var(--text-dark);
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.25);
+    margin-bottom:25px;
+}
+
+.toggle{
+    text-align:right;
+    cursor:pointer;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.moon{
+    position:fixed;
+    top:-100px;
+    right:-100px;
+    width:250px;
+    height:250px;
+    background:radial-gradient(circle,#f1c40f,#f39c12);
+    border-radius:50%;
+    opacity:.15;
+    animation:float 10s infinite ease-in-out;
+}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(20px);}
+}
+
+.time-row{
+    display:flex;
+    justify-content:space-between;
+    padding:12px;
+    margin:8px 0;
+    background:#f9f9f9;
+    border-left:5px solid var(--accent);
+    border-radius:10px;
+    font-weight:600;
+}
+
+button{
+    padding:8px 12px;
+    border:none;
+    background:var(--accent);
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="moon"></div>
+
+<div class="container">
+
+<div class="toggle" onclick="toggleTheme()">ðŸŒ™ Dark / Light</div>
+
+<div class="card">
+    <h3>à¦¨à¦¾à¦®à¦¾à¦œ à¦¸à¦®à§Ÿ</h3>
+    <div class="time-row"><span>à¦«à¦œà¦°</span><span id="fajr">--</span></div>
+    <div class="time-row"><span>à¦œà§‹à¦¹à¦°</span><span id="dhuhr">--</span></div>
+    <div class="time-row"><span>à¦†à¦¸à¦°</span><span id="asr">--</span></div>
+    <div class="time-row"><span>à¦®à¦¾à¦—à¦°à¦¿à¦¬</span><span id="maghrib">--</span></div>
+    <div class="time-row"><span>à¦à¦¶à¦¾</span><span id="isha">--</span></div>
+</div>
+
+<div class="card">
+    <h3>Admin Panel</h3>
+    <input type="text" id="noticeInput" placeholder="à¦¨à§‹à¦Ÿà¦¿à¦¶ à¦²à¦¿à¦–à§à¦¨">
+    <button onclick="saveNotice()">Save</button>
+    <p id="noticeDisplay"></p>
+</div>
+
+</div>
+
+<audio id="azan" src="azan.mp3"></audio>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
+
+function toggleTheme(){
+    document.body.classList.toggle('dark');
+}
+
+function saveNotice(){
+    const val=document.getElementById("noticeInput").value;
+    localStorage.setItem("notice",val);
+    loadNotice();
+}
+
+function loadNotice(){
+    document.getElementById("noticeDisplay").innerText=
+    localStorage.getItem("notice") || "à¦•à§‹à¦¨ à¦¨à§‹à¦Ÿà¦¿à¦¶ à¦¨à§‡à¦‡";
+}
+loadNotice();
+
+async function loadData(){
+    const res=await fetch("https://api.aladhan.com/v1/timingsByCity?city=Dhaka&country=Bangladesh&method=1");
+    const data=await res.json();
+    const t=data.data.timings;
+
+    set("fajr",t.Fajr);
+    set("dhuhr",t.Dhuhr);
+    set("asr",t.Asr);
+    set("maghrib",t.Maghrib);
+    set("isha",t.Isha);
+
+    checkAzan(t);
+}
+
+function set(id,time){
+    document.getElementById(id).innerText=time;
+}
+
+function checkAzan(t){
+    const now=new Date();
+    const current=now.getHours()+":"+String(now.getMinutes()).padStart(2,"0");
+
+    Object.values(t).forEach(time=>{
+        if(time===current){
+            document.getElementById("azan").play();
+            new Notification("à¦¨à¦¾à¦®à¦¾à¦œà§‡à¦° à¦¸à¦®à§Ÿ à¦¹à§Ÿà§‡à¦›à§‡");
+        }
+    });
+}
+
+if(Notification.permission!=="granted"){
+    Notification.requestPermission();
+}
+
+setInterval(loadData,60000);
+loadData();
+</script>
+
+</body>
+</html>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#27ae60">
